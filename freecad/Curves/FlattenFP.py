@@ -246,6 +246,30 @@ def flat_extrusion_surface(extr, inPlace=False, size=1e10):
     return nts2
 
 
+def flat_plane_surface(plane, inPlace=False, size=0.0):
+    """Returns a planar surface that is a flat representation of the input Plane.
+
+    A plane is already flat : its parameters are the cartesian distances along
+    its X and Y directions, so unrolling is just an isometry.
+
+    Parameters
+    ----------
+    plane : Surface of type Part.Plane
+    InPlace (bool) : If True, the output surface coincides with the source plane
+        (the unrolled face stays where it is).
+        If False, the output surface is the default XY plane.
+    size (float) : Unused, kept for signature consistency with the other
+        flat_*_surface functions (a plane is infinite, so no size is needed).
+
+    Returns
+    -------
+    a Part.Plane that matches the parametric space of the input plane.
+    """
+    if inPlace:
+        return plane.copy()
+    return Part.Plane()
+
+
 def intersection(lines, tol=1e-7):
     """
     If lines all intersect into one point.
@@ -388,7 +412,7 @@ def flatten_face(face, inPlace=False, size=0.0):
     elif isinstance(face.Surface, Part.SurfaceOfExtrusion):
         flatsurf = flat_extrusion_surface(face.Surface, inPlace, size)
     elif isinstance(face.Surface, Part.Plane):
-        flatsurf = Part.Plane()
+        flatsurf = flat_plane_surface(face.Surface, inPlace, size)
     # elif isinstance(face.Surface, Part.BSplineSurface):
     #     flatsurf = flat_conical_surface(face.Surface, inPlace, size)
     else:
